@@ -98,11 +98,25 @@ else:
 import redis
 from urllib.parse import urlparse
 
+# Parse Redis URL properly
+REDIS_URL = os.environ.get("REDIS_URL", "redis://localhost:6379/0")
+
+# Parse the URL to extract host and port
+if REDIS_URL:
+    parsed_url = urlparse(REDIS_URL)
+    redis_host = parsed_url.hostname or "localhost"
+    redis_port = parsed_url.port or 6379
+    redis_db = int(parsed_url.path.split("/")[-1] or 0)
+else:
+    redis_host = "localhost"
+    redis_port = 6379
+    redis_db = 0
+
 CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
-            "hosts": [os.environ.get("REDIS_URL", "redis://localhost:6379/0")],
+            "hosts": [(redis_host, redis_port)],
         },
     },
 }
