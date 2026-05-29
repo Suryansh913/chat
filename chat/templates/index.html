@@ -906,7 +906,11 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    const ws = new WebSocket("ws://127.0.0.1:8000/ws/wsc/");
+    const protocol = window.location.protocol === "https:" ? "wss" : "ws";
+
+    const ws = new WebSocket(
+        `${protocol}://${window.location.host}/ws/wsc/`
+    );
     ws.addEventListener("open",    () => console.log("WS connected"));
     ws.addEventListener("close",   () => console.log("WS closed"));
     ws.addEventListener("message", (event) => {
