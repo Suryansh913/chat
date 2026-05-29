@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-+izc5k-eoak0d#y2cn!+l&mdzy-c2m@f(r%g-5hsh%x1*5og-*
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = [ 'chat-8rd4.onrender.com','*']
 
 
 # Application definition
@@ -129,3 +129,6 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = 'static/'
+CSRF_TRUSTED_ORIGINS = [
+    'https://chat-8rd4.onrender.com',
+]
