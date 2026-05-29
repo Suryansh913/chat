@@ -1,9 +1,9 @@
 #!/bin/bash
 set -e
 
-# Install with pre-built wheels only (no compilation)
-pip install --only-binary :all: -r requirements.txt
+# Install with pre-built wheels only
+pip install --prefer-binary -r requirements.txt
 
-# Run Django migrations and collectstatic
+# Run Django setup
 python manage.py migrate
 python manage.py collectstatic --noinput

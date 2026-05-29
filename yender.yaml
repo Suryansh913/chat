@@ -2,10 +2,10 @@ services:
   - type: web
     name: chat
     env: python
-    buildCommand: bash build.sh
+    pythonVersion: 3.11
+    buildCommand: |
+      pip install --upgrade pip
+      pip install --prefer-binary -r requirements.txt
+      python manage.py migrate
+      python manage.py collectstatic --noinput
     startCommand: python -m daphne -b 0.0.0.0 -p $PORT chatting.asgi:application
-    envVars:
-      - key: DJANGO_SETTINGS_MODULE
-        value: chatting.settings
-      - key: DATABASE_URL
-        value: postgresql://chat_db_kbtn_user:RKrfyCdFtKhqUTGIAtUgWSnup2EUztrl@dpg-d8cn2t58nd3s73cq1870-a/chat_db_kbtn
