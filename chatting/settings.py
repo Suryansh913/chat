@@ -11,6 +11,9 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
 from pathlib import Path
+import os
+import dj_database_url
+from urllib.parse import urlparse
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -25,7 +28,7 @@ SECRET_KEY = 'django-insecure-+izc5k-eoak0d#y2cn!+l&mdzy-c2m@f(r%g-5hsh%x1*5og-*
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = [ 'chat-8rd4.onrender.com','*']
+ALLOWED_HOSTS = ['chat-8rd4.onrender.com','*']
 
 
 # Application definition
@@ -78,8 +81,6 @@ ASGI_APPLICATION = 'chatting.asgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
-import os
-import dj_database_url
 
 if os.environ.get("DATABASE_URL"):
     DATABASES = {
@@ -95,17 +96,34 @@ else:
         }
     }
 
-import redis
-from urllib.parse import urlparse
+# Redis Channel Layers Configuration
+REDIS_URL = os.environ.get("REDIS_URL", "redis://localhost:6379/0")
+
+# Parse Redis URL to extract host, port, and db
+parsed_redis = urlparse(REDIS_URL)
+REDIS_HOST = parsed_redis.hostname or "localhost"
+REDIS_PORT = parsed_redis.port or 6379
+REDIS_DB = int(parsed_redis.path.lstrip('/').split('/')[0] or 0)
+REDIS_PASSWORD = parsed_redis.password
+
+# Build Redis connection tuple
+if REDIS_PASSWORD:
+    REDIS_CONNECTION = f"rediss://:{REDIS_PASSWORD}@{REDIS_HOST}:{REDIS_PORT}/{REDIS_DB}"
+else:
+    REDIS_CONNECTION = f"redis://{REDIS_HOST}:{REDIS_PORT}/{REDIS_DB}"
 
 CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
-            "hosts": [os.environ.get("REDIS_URL", "redis://localhost:6379/0")],
+            "hosts": [(REDIS_HOST, REDIS_PORT)],
+            "db": REDIS_DB,
+            "password": REDIS_PASSWORD,
+            "ssl_cert_reqs": "none",  # For Render's Redis (allows SSL)
         },
     },
 }
+
 # Password validation
 # https://docs.djangoproject.com/en/6.0/ref/settings/#auth-password-validators
 
