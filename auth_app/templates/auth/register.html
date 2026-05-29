@@ -1,0 +1,236 @@
+{% extends 'layouts/app.html' %}
+{% block content %}
+
+<style>
+  * { box-sizing: border-box; }
+
+  .cb-page { display: flex; min-height: 100vh; }
+
+  .cb-left {
+    flex: 1; background: #14532d; padding: 3rem;
+    display: flex; flex-direction: column;
+    justify-content: space-between; position: relative; overflow: hidden;
+  }
+  .cb-right {
+    width: 420px; flex-shrink: 0; padding: 3rem;
+    display: flex; flex-direction: column; justify-content: center; background: #fff;
+  }
+
+  /* Floating bubbles */
+  .float-bubble {
+    position: absolute; border-radius: 14px;
+    background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.14);
+    padding: 10px 14px; display: flex; align-items: center; gap: 10px;
+  }
+  .float-avatar {
+    width: 28px; height: 28px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 700; flex-shrink: 0;
+  }
+  @keyframes floatA { 0%,100%{transform:translateY(0);} 50%{transform:translateY(-8px);} }
+  @keyframes floatB { 0%,100%{transform:translateY(0);} 50%{transform:translateY(-6px);} }
+  @keyframes floatC { 0%,100%{transform:translateY(0);} 50%{transform:translateY(-10px);} }
+  .fa { animation: floatA 4s ease-in-out infinite; }
+  .fb { animation: floatB 5s ease-in-out infinite 1s; }
+  .fc { animation: floatC 4.5s ease-in-out infinite 0.5s; }
+
+  .cb-pill {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.18);
+    color: rgba(255,255,255,0.9); font-size: 12px;
+    padding: 5px 14px; border-radius: 99px; margin: 0 6px 8px 0;
+  }
+  .cb-feature {
+    display: flex; align-items: flex-start; gap: 14px;
+    padding: 14px 0; border-bottom: 1px solid rgba(255,255,255,0.08);
+  }
+  .cb-feature:last-child { border-bottom: none; }
+  .cb-icon-wrap {
+    width: 38px; height: 38px; border-radius: 10px;
+    background: rgba(255,255,255,0.12);
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+
+  .cb-inp-wrap { position: relative; margin-bottom: 1rem; }
+  .cb-inp-wrap .ico {
+    position: absolute; left: 12px; top: 50%;
+    transform: translateY(-50%); color: #639922; font-size: 16px;
+  }
+  .cb-inp {
+    width: 100%; padding: 11px 14px 11px 40px;
+    font-size: 14px; border: 1.5px solid #d1fae5;
+    border-radius: 10px; background: #f0fdf4; color: #14532d; outline: none;
+    transition: border-color .15s, box-shadow .15s;
+  }
+  .cb-inp:focus {
+    border-color: #22c55e;
+    box-shadow: 0 0 0 3px rgba(34,197,94,.15);
+    background: #fff;
+  }
+
+  @media (max-width: 768px) {
+    .cb-page { flex-direction: column; }
+    .cb-right { width: 100%; padding: 2rem 1.5rem; }
+    .cb-left { padding: 2rem 1.5rem; }
+    .float-bubble { display: none; }
+  }
+</style>
+
+<div class="cb-page">
+
+  <!-- LEFT: Hero -->
+  <div class="cb-left">
+
+    <!-- Floating notification bubbles -->
+    <div class="float-bubble fa" style="top:20px;right:24px;">
+      <div class="float-avatar" style="background:#fde047;color:#854d0e;">R</div>
+      <div>
+        <div style="font-size:11px;font-weight:600;color:#fff;">Rahul joined!</div>
+        <div style="font-size:10px;color:rgba(255,255,255,0.5);">Just now</div>
+      </div>
+    </div>
+
+    <div class="float-bubble fb" style="bottom:120px;right:16px;">
+      <div class="float-avatar" style="background:#86efac;color:#14532d;">A</div>
+      <div>
+        <div style="font-size:11px;font-weight:600;color:#fff;">Ananya is typing...</div>
+        <div style="font-size:10px;color:rgba(255,255,255,0.5);">Group Chat</div>
+      </div>
+    </div>
+
+    <div class="float-bubble fc" style="bottom:130px;left:20px;">
+      <span style="font-size:14px;">💬</span>
+      <div style="font-size:11px;color:#fff;font-weight:500;">128 messages today</div>
+    </div>
+
+    <div style="position:relative;z-index:2;">
+      <!-- Brand -->
+      <div style="display:flex;align-items:center;gap:14px;margin-bottom:2.5rem;">
+        <div style="width:52px;height:52px;border-radius:14px;background:rgba(255,255,255,0.15);border:1.5px solid rgba(255,255,255,0.25);display:flex;align-items:center;justify-content:center;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+            <path d="M12 21a9 9 0 1 0-9-9c0 1.488.36 2.89 1 4.127L3 21l4.873-1c1.236.639 2.64 1 4.127 1z"/>
+          </svg>
+        </div>
+        <div>
+          <div style="font-size:28px;font-weight:800;color:#fff;letter-spacing:-0.5px;">ChatBuddy</div>
+          <div style="font-size:11px;color:rgba(255,255,255,0.5);letter-spacing:1.5px;text-transform:uppercase;margin-top:3px;">Messaging Platform</div>
+        </div>
+      </div>
+
+      <h1 style="font-size:32px;font-weight:800;color:#fff;margin:0 0 10px;line-height:1.2;">
+        Start your journey,<br><span style="color:#fde047;">join the chat.</span>
+      </h1>
+      <p style="font-size:14px;color:rgba(255,255,255,0.65);margin:0 0 2rem;line-height:1.7;">
+        Create a free account and instantly connect with friends, groups, and communities.
+      </p>
+
+      <div style="margin-bottom:2rem;">
+        <span class="cb-pill">✓ Free forever</span>
+        <span class="cb-pill">🔒 Private &amp; secure</span>
+        <span class="cb-pill">⚡ Setup in 30 sec</span>
+      </div>
+
+      <div>
+        <div class="cb-feature">
+          <div class="cb-icon-wrap">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" stroke="#86efac" stroke-width="1.5" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/><path d="m16 11 2 2 4-4"/></svg>
+          </div>
+          <div>
+            <div style="font-size:14px;font-weight:700;color:#fff;margin-bottom:3px;">One account, everything</div>
+            <div style="font-size:13px;color:rgba(255,255,255,0.55);line-height:1.5;">Access chats, media, and settings from any device.</div>
+          </div>
+        </div>
+        <div class="cb-feature">
+          <div class="cb-icon-wrap">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" stroke="#86efac" stroke-width="1.5" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          </div>
+          <div>
+            <div style="font-size:14px;font-weight:700;color:#fff;margin-bottom:3px;">End-to-end encrypted</div>
+            <div style="font-size:13px;color:rgba(255,255,255,0.55);line-height:1.5;">Your messages are private. We never read them.</div>
+          </div>
+        </div>
+        <div class="cb-feature">
+          <div class="cb-icon-wrap">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" stroke="#86efac" stroke-width="1.5" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
+          </div>
+          <div>
+            <div style="font-size:14px;font-weight:700;color:#fff;margin-bottom:3px;">Fun &amp; expressive</div>
+            <div style="font-size:13px;color:rgba(255,255,255,0.55);line-height:1.5;">Reactions, stickers, GIFs, and voice messages.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div style="padding-top:1.5rem;border-top:1px solid rgba(255,255,255,0.1);position:relative;z-index:2;">
+      <div style="font-size:12px;color:rgba(255,255,255,0.5);">
+        Join <strong style="color:#fde047;">10,000+</strong> users already chatting
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT: Register form -->
+  <div class="cb-right">
+    <div style="margin-bottom:2rem;">
+      <div style="font-size:24px;font-weight:800;color:#14532d;margin-bottom:6px;">Create your account</div>
+      <div style="font-size:14px;color:#4b7c5e;">Free to join. Ready in seconds.</div>
+    </div>
+
+    <form method="POST" action="{% url 'register' %}">
+      {% csrf_token %}
+
+      <div class="cb-inp-wrap">
+        <span class="ico">👤</span>
+        <input type="text" name="{{ form.username.name }}"
+               value="{{ form.username.value|default_if_none:'' }}"
+               class="cb-inp" placeholder="Choose a username">
+        {% if form.username.errors %}
+          <p style="font-size:12px;color:#dc2626;margin:4px 0 0;">{{ form.username.errors|join:", " }}</p>
+        {% endif %}
+      </div>
+
+      <div class="cb-inp-wrap">
+        <span class="ico">🔒</span>
+        <input type="password" name="{{ form.password1.name }}"
+               class="cb-inp" placeholder="Create a password">
+        {% if form.password1.errors %}
+          <p style="font-size:12px;color:#dc2626;margin:4px 0 0;">{{ form.password1.errors|join:", " }}</p>
+        {% endif %}
+      </div>
+
+      <div class="cb-inp-wrap" style="margin-bottom:1rem;">
+        <span class="ico">✅</span>
+        <input type="password" name="{{ form.password2.name }}"
+               class="cb-inp" placeholder="Confirm your password">
+        {% if form.password2.errors %}
+          <p style="font-size:12px;color:#dc2626;margin:4px 0 0;">{{ form.password2.errors|join:", " }}</p>
+        {% endif %}
+      </div>
+
+      <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;padding:10px 14px;margin-bottom:1.25rem;display:flex;gap:10px;">
+        <span style="font-size:14px;flex-shrink:0;margin-top:1px;">🛡️</span>
+        <div style="font-size:12px;color:#166534;line-height:1.5;">Password must be at least 8 characters and include a number or symbol.</div>
+      </div>
+
+      <button type="submit" style="width:100%;padding:12px;background:#16a34a;color:#fff;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer;margin-bottom:1rem;">
+        Create account
+      </button>
+    </form>
+
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:1rem;">
+      <div style="flex:1;height:1px;background:#d1fae5;"></div>
+      <span style="font-size:12px;color:#86efac;font-weight:500;">or</span>
+      <div style="flex:1;height:1px;background:#d1fae5;"></div>
+    </div>
+
+    <a href="{% url 'login' %}" style="display:flex;align-items:center;justify-content:center;width:100%;padding:11px;background:#fefce8;color:#854d0e;border:1.5px solid #fde047;border-radius:10px;font-size:14px;font-weight:700;text-decoration:none;">
+      Already have an account? Sign in
+    </a>
+
+    <div style="margin-top:2.5rem;padding-top:1.25rem;border-top:1px solid #d1fae5;text-align:center;">
+      <p style="font-size:12px;color:#86efac;margin:0 0 3px;">&copy; 2025 ChatBuddy. All rights reserved.</p>
+      <p style="font-size:12px;color:#86efac;margin:0;">Developed by <strong style="color:#ca8a04;">Suryansh</strong></p>
+    </div>
+  </div>
+
+</div>
+{% endblock %}

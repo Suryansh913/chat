@@ -1,0 +1,175 @@
+{% extends 'layouts/app.html' %}
+{% block content %}
+
+<style>
+  * { box-sizing: border-box; }
+  .cb-page { display: flex; min-height: 100vh; }
+
+  /* LEFT PANEL */
+  .cb-left {
+    flex: 1; background: #14532d; padding: 3rem;
+    display: flex; flex-direction: column; justify-content: space-between;
+  }
+  .cb-pill {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.18);
+    color: rgba(255,255,255,0.9); font-size: 12px;
+    padding: 5px 14px; border-radius: 99px; margin: 0 6px 8px 0;
+  }
+  .cb-feature {
+    display: flex; align-items: flex-start; gap: 14px;
+    padding: 16px 0; border-bottom: 1px solid rgba(255,255,255,0.08);
+  }
+  .cb-feature:last-child { border-bottom: none; }
+  .cb-icon-wrap {
+    width: 38px; height: 38px; border-radius: 10px;
+    background: rgba(255,255,255,0.12);
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+
+  /* RIGHT PANEL */
+  .cb-right {
+    width: 420px; flex-shrink: 0; padding: 3rem;
+    display: flex; flex-direction: column; justify-content: center;
+    background: #fff;
+  }
+  .cb-inp {
+    width: 100%; padding: 11px 14px 11px 40px;
+    font-size: 14px; border: 1.5px solid #d1fae5;
+    border-radius: 10px; background: #f0fdf4; color: #14532d; outline: none;
+    transition: border-color .15s, box-shadow .15s;
+  }
+  .cb-inp:focus {
+    border-color: #22c55e;
+    box-shadow: 0 0 0 3px rgba(34,197,94,.15);
+    background: #fff;
+  }
+  .cb-inp-wrap { position: relative; margin-bottom: 1rem; }
+  .cb-inp-wrap .icon {
+    position: absolute; left: 12px; top: 50%;
+    transform: translateY(-50%); color: #639922; font-size: 16px;
+  }
+
+  @media (max-width: 768px) {
+    .cb-page { flex-direction: column; }
+    .cb-right { width: 100%; padding: 2rem 1.5rem; }
+  }
+</style>
+
+<div class="cb-page">
+
+  <!-- LEFT: Hero -->
+  <div class="cb-left">
+    <div>
+      <div style="display:flex;align-items:center;gap:14px;margin-bottom:2.5rem;">
+        <div style="width:52px;height:52px;border-radius:14px;background:rgba(255,255,255,0.15);border:1.5px solid rgba(255,255,255,0.25);display:flex;align-items:center;justify-content:center;">
+          <!-- chat icon -->
+          <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+            <path d="M12 21a9 9 0 1 0-9-9c0 1.488.36 2.89 1 4.127L3 21l4.873-1c1.236.639 2.64 1 4.127 1z"/>
+          </svg>
+        </div>
+        <div>
+          <div style="font-size:28px;font-weight:800;color:#fff;letter-spacing:-0.5px;line-height:1;">ChatBuddy</div>
+          <div style="font-size:11px;color:rgba(255,255,255,0.5);letter-spacing:1.5px;text-transform:uppercase;margin-top:3px;">Messaging Platform</div>
+        </div>
+      </div>
+
+      <h1 style="font-size:32px;font-weight:800;color:#fff;margin:0 0 10px;line-height:1.2;">
+        Connect with everyone,<br><span style="color:#fde047;">everywhere.</span>
+      </h1>
+      <p style="font-size:14px;color:rgba(255,255,255,0.65);margin:0 0 2rem;line-height:1.7;">
+        Fast, secure, and simple messaging for friends, teams, and communities.
+      </p>
+
+      <div style="margin-bottom:2rem;">
+        <span class="cb-pill">⚡ Real-time</span>
+        <span class="cb-pill">🔒 Encrypted</span>
+        <span class="cb-pill">📱 Cross-platform</span>
+      </div>
+
+      <div>
+        <div class="cb-feature">
+          <div class="cb-icon-wrap">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" stroke="#86efac" stroke-width="1.5" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          </div>
+          <div>
+            <div style="font-size:14px;font-weight:700;color:#fff;margin-bottom:3px;">Group & Direct Messages</div>
+            <div style="font-size:13px;color:rgba(255,255,255,0.55);line-height:1.5;">Chat one-on-one or create group rooms with up to 500 members.</div>
+          </div>
+        </div>
+        <div class="cb-feature">
+          <div class="cb-icon-wrap">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" stroke="#86efac" stroke-width="1.5" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+          </div>
+          <div>
+            <div style="font-size:14px;font-weight:700;color:#fff;margin-bottom:3px;">Rich Media Sharing</div>
+            <div style="font-size:13px;color:rgba(255,255,255,0.55);line-height:1.5;">Share photos, files, and voice notes instantly.</div>
+          </div>
+        </div>
+        <div class="cb-feature">
+          <div class="cb-icon-wrap">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" stroke="#86efac" stroke-width="1.5" viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+          </div>
+          <div>
+            <div style="font-size:14px;font-weight:700;color:#fff;margin-bottom:3px;">Smart Notifications</div>
+            <div style="font-size:13px;color:rgba(255,255,255,0.55);line-height:1.5;">Never miss a message with real-time alerts.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div style="padding-top:1.5rem;border-top:1px solid rgba(255,255,255,0.1);">
+      <div style="font-size:12px;color:rgba(255,255,255,0.5);">Join <strong style="color:#fde047;">10,000+</strong> users already chatting</div>
+    </div>
+  </div>
+
+  <!-- RIGHT: Login -->
+  <div class="cb-right">
+    <div style="margin-bottom:2rem;">
+      <div style="font-size:24px;font-weight:800;color:#14532d;margin-bottom:6px;">Welcome back</div>
+      <div style="font-size:14px;color:#4b7c5e;">Sign in to continue to ChatBuddy</div>
+    </div>
+
+    <form method="POST" action="{% url 'login' %}">
+      {% csrf_token %}
+
+      <div class="cb-inp-wrap">
+        <span class="icon">&#128100;</span>
+        <input type="text" name="{{ form.username.name }}"
+               value="{{ form.username.value|default_if_none:'' }}"
+               class="cb-inp" placeholder="Username">
+      </div>
+
+      <div class="cb-inp-wrap" style="margin-bottom:0.5rem;">
+        <span class="icon">&#128274;</span>
+        <input type="password" name="{{ form.password.name }}"
+               class="cb-inp" placeholder="Password">
+      </div>
+
+      <div style="text-align:right;margin-bottom:1.5rem;">
+        <a href="#" style="font-size:12px;color:#ca8a04;font-weight:600;text-decoration:none;">Forgot password?</a>
+      </div>
+
+      <button type="submit" style="width:100%;padding:12px;background:#16a34a;color:#fff;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer;margin-bottom:1rem;">
+        Sign in
+      </button>
+    </form>
+
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:1rem;">
+      <div style="flex:1;height:1px;background:#d1fae5;"></div>
+      <span style="font-size:12px;color:#86efac;font-weight:500;">or</span>
+      <div style="flex:1;height:1px;background:#d1fae5;"></div>
+    </div>
+
+    <a href="{% url 'register' %}" style="display:flex;align-items:center;justify-content:center;width:100%;padding:11px;background:#fefce8;color:#854d0e;border:1.5px solid #fde047;border-radius:10px;font-size:14px;font-weight:700;text-decoration:none;">
+      Create a new account
+    </a>
+
+    <div style="margin-top:2.5rem;padding-top:1.25rem;border-top:1px solid #d1fae5;text-align:center;">
+      <p style="font-size:12px;color:#86efac;margin:0 0 3px;">&copy; 2025 ChatBuddy. All rights reserved.</p>
+      <p style="font-size:12px;color:#86efac;margin:0;">Developed by <strong style="color:#ca8a04;">Suryansh</strong></p>
+    </div>
+  </div>
+
+</div>
+{% endblock %}
