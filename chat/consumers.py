@@ -1,4 +1,3 @@
-# chat/consumers.py
 import json
 from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.db import database_sync_to_async
@@ -8,46 +7,48 @@ class MychatApp(AsyncWebsocketConsumer):
 
     async def connect(self):
         # Use username for consistent group naming
-        self.user_group_name = f"mychat_app_{self.scope['user'].username}"
+        self.username = self.scope['user'].username
+        self.user_group_name = f"mychat_app_{self.username}"
         
         await self.channel_layer.group_add(
             self.user_group_name,
             self.channel_name
         )
         await self.accept()
-        print(f"User {self.scope['user'].username} connected to group {self.user_group_name}")
+        print(f"✓ User {self.username} connected to group {self.user_group_name}")
 
     async def receive(self, text_data):
         try:
-            text_data = json.loads(text_data)
-            recipient_username = text_data.get('user')
-            message = text_data.get('msg')
+            data = json.loads(text_data)
+            recipient_username = data.get('user')
+            message = data.get('msg')
             
             if not recipient_username or not message:
-                await self.send(text_data=json.dumps({
-                    "error": "Missing user or msg field"
-                }))
+                print(f"⚠ Invalid message format from {self.username}")
                 return
             
             # Send to recipient's group
             recipient_group = f"mychat_app_{recipient_username}"
+            sender_username = self.username
+            
+            print(f"📤 {self.username} → {recipient_username}: {message}")
             
             await self.channel_layer.group_send(
                 recipient_group,
                 {
                     "type": "send_msg",
                     "msg": message,
-                    "sender": self.scope['user'].username
+                    "sender": sender_username
                 }
             )
             
             # Save chat
-            await self.save_chat(text_data)
+            await self.save_chat(data)
             
-        except json.JSONDecodeError:
-            await self.send(text_data=json.dumps({
-                "error": "Invalid JSON"
-            }))
+        except json.JSONDecodeError as e:
+            print(f"❌ JSON decode error: {e}")
+        except Exception as e:
+            print(f"❌ Error in receive: {e}")
 
     @database_sync_to_async
     def save_chat(self, text_data):
@@ -82,14 +83,20 @@ class MychatApp(AsyncWebsocketConsumer):
             }
             mychats.chats = old_chats
             mychats.save()
+            print(f"✓ Chat saved for {self.username} ↔ {text_data['user']}")
         except User.DoesNotExist:
-            print(f"User {text_data['user']} not found")
+            print(f"❌ User {text_data['user']} not found")
+        except Exception as e:
+            print(f"❌ Error saving chat: {e}")
 
     async def send_msg(self, event):
-        # Send message to WebSocket
+        """Called when group_send is triggered with type: 'send_msg'"""
+        print(f"📥 Sending to {self.username}: {event['msg']} from {event.get('sender', '?')}")
+        
+        # Send as JSON to client
         await self.send(text_data=json.dumps({
             "msg": event['msg'],
-            "sender": event['sender']
+            "sender": event.get('sender', 'Unknown')
         }))
 
     async def disconnect(self, close_code):
@@ -97,4 +104,4 @@ class MychatApp(AsyncWebsocketConsumer):
             self.user_group_name,
             self.channel_name
         )
-        print(f"User disconnected from group {self.user_group_name}")
+        print(f"✗ User {self.username} disconnected from group {self.user_group_name}")

@@ -914,8 +914,22 @@ document.addEventListener("DOMContentLoaded", function () {
     ws.addEventListener("open",    () => console.log("WS connected"));
     ws.addEventListener("close",   () => console.log("WS closed"));
     ws.addEventListener("message", (event) => {
-        appendMessage("frnd", event.data);
-        showToast(user || "Someone", event.data);
+        try {
+            const data = JSON.parse(event.data);
+            const sender = data.sender || "Someone";
+            const message = data.msg || event.data;
+            
+            console.log(`📨 Received from ${sender}: ${message}`);
+            
+            // Only show message if it's from the current chat user
+            if (sender === user) {
+                appendMessage("frnd", message);
+                showToast(sender, message);
+            }
+        } catch (e) {
+            console.error("❌ Failed to parse message:", e);
+            console.log("Raw event.data:", event.data);
+        }
     });
 
     if (sendButton) {
