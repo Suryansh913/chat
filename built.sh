@@ -1,9 +1,11 @@
 #!/bin/bash
 set -e
 
-# Install with pre-built wheels only
+# Install dependencies
 pip install --prefer-binary -r requirements.txt
 
-# Run Django setup
-python manage.py migrate
+# Collect static files
 python manage.py collectstatic --noinput
+
+# Run migrations
+python manage.py migrate
