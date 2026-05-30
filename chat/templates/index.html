@@ -33,18 +33,27 @@
             --font-body:    'DM Sans', sans-serif;
         }
 
-        html, body {
+        html {
             height: 100%;
-            overflow: hidden;
+            height: -webkit-fill-available;
         }
 
         body {
             font-family: var(--font-body);
             background: var(--main-bg);
             color: var(--text-dark);
+            height: 100%;
+            height: -webkit-fill-available;
+            overflow: hidden;
         }
 
-        .app { display: flex; height: 100vh; position: relative; overflow: hidden; }
+        .app {
+            display: flex;
+            height: 100vh;
+            height: 100dvh;
+            position: relative;
+            overflow: hidden;
+        }
 
         /* ── SIDEBAR OVERLAY (mobile) ── */
         .sidebar-overlay {
@@ -301,6 +310,8 @@
             overflow: hidden;
             position: relative;
             min-width: 0;
+            min-height: 0;
+            height: 100%;
         }
 
         .main::before {
@@ -500,6 +511,7 @@
             position: relative;
             z-index: 1;
             flex-shrink: 0;
+            width: 100%;
         }
 
         .input-pill {
@@ -675,25 +687,30 @@
                 position: fixed;
                 top: 0; left: 0;
                 height: 100%;
+                height: 100dvh;
                 transform: translateX(-100%);
                 box-shadow: 4px 0 24px rgba(0,0,0,0.25);
             }
 
             .sidebar.open { transform: translateX(0); }
 
-            /* Main panel fills full width */
-            .main { width: 100%; }
+            /* Main panel fills full width and full dynamic height */
+            .main {
+                width: 100%;
+                height: 100dvh;
+                height: -webkit-fill-available;
+            }
 
             /* Tighter header padding */
             .chat-header { padding: 12px 14px; gap: 10px; }
 
-            /* Messages fill screen with tighter padding */
+            /* Messages fill remaining space */
             .messages { padding: 16px 12px; }
 
             /* Wider bubbles on small screen */
             .bubble-wrap { max-width: 80%; }
 
-            /* Input area — tighter, respects iOS home bar */
+            /* Input area — full width, respects iOS home bar */
             .input-area {
                 padding: 10px 10px;
                 padding-bottom: max(10px, env(safe-area-inset-bottom, 10px));
@@ -702,7 +719,7 @@
 
             .input-pill { padding: 8px 12px; gap: 8px; }
 
-            .input-pill textarea { font-size: 14px; }
+            .input-pill textarea { font-size: 16px; } /* 16px prevents iOS zoom on focus */
 
             /* Send button slightly smaller */
             .send-btn { width: 40px; height: 40px; }
@@ -1095,6 +1112,17 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     if (chatMessages) chatMessages.scrollTop = chatMessages.scrollHeight;
+
+    // ── iOS keyboard / visual viewport fix ──
+    if (window.visualViewport) {
+        function onViewportResize() {
+            const app = document.querySelector('.app');
+            if (app) app.style.height = window.visualViewport.height + 'px';
+        }
+        window.visualViewport.addEventListener('resize', onViewportResize);
+        window.visualViewport.addEventListener('scroll', onViewportResize);
+        onViewportResize();
+    }
 
     // ── Sidebar contact search ──
     const sidebarSearch = document.getElementById('sidebar-search');
