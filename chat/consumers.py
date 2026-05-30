@@ -8,16 +8,13 @@ class MychatApp(AsyncWebsocketConsumer):
 
     
     async def connect(self):
-        print("CONNECT CALLED")
-        print("USER:", self.scope["user"])
 
-        if self.scope["user"].is_anonymous:
-            print("ANONYMOUS USER - CONNECTION REJECTED")
+        if not self.scope["user"].is_authenticated:
+            print("❌ Anonymous user")
             await self.close()
             return
 
         self.username = self.scope["user"].username
-
         self.user_group_name = f"mychat_app_{self.username}"
 
         await self.channel_layer.group_add(
@@ -27,7 +24,7 @@ class MychatApp(AsyncWebsocketConsumer):
 
         await self.accept()
 
-        print(f"CONNECTED: {self.username}")
+        print(f"Connected {self.username}")
 
     async def receive(self, text_data):
         try:
