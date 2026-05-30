@@ -10,50 +10,53 @@
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
         :root {
-            /* Sidebar — dark slate */
             --sb-bg:      #1c2420;
             --sb-bg2:     #232e29;
             --sb-border:  rgba(255,255,255,0.07);
             --sb-text:    #c8d8c8;
             --sb-text2:   #6a8a72;
             --sb-text3:   #3d5445;
-
-            /* Main — warm light */
             --main-bg:    #f5f7f4;
             --main-bg2:   #ffffff;
             --main-border:#e2e8e0;
-
-            /* Text on light */
             --text-dark:  #1c2420;
             --text-mid:   #5a7060;
             --text-light: #94a89a;
-
-            /* Accent */
             --green:      #3aaa5c;
             --green2:     #2e9050;
             --yellow:     #c8d820;
             --yellow2:    #afc010;
-
-            /* Bubbles */
             --bubble-me-from: #3aaa5c;
             --bubble-me-to:   #c8d820;
             --bubble-them:    #ffffff;
-
             --font-display: 'Syne', sans-serif;
             --font-body:    'DM Sans', sans-serif;
+        }
+
+        html, body {
+            height: 100%;
+            overflow: hidden;
         }
 
         body {
             font-family: var(--font-body);
             background: var(--main-bg);
             color: var(--text-dark);
-            height: 100vh;
-            overflow: hidden;
         }
 
-        .app { display: flex; height: 100vh; }
+        .app { display: flex; height: 100vh; position: relative; overflow: hidden; }
 
-        /* ── SIDEBAR (dark) ── */
+        /* ── SIDEBAR OVERLAY (mobile) ── */
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.45);
+            z-index: 15;
+        }
+        .sidebar-overlay.show { display: block; }
+
+        /* ── SIDEBAR ── */
         .sidebar {
             width: 290px;
             min-width: 290px;
@@ -62,9 +65,11 @@
             flex-direction: column;
             overflow: hidden;
             position: relative;
+            transition: transform 0.28s cubic-bezier(.4,0,.2,1);
+            z-index: 20;
+            flex-shrink: 0;
         }
 
-        /* Faint "ChatBuddy" watermark */
         .sidebar::after {
             content: 'Chat\A Buddy';
             white-space: pre;
@@ -118,7 +123,6 @@
             padding-left: 40px;
         }
 
-        /* Search */
         .search-wrap {
             padding: 12px 16px;
             border-bottom: 1px solid var(--sb-border);
@@ -157,7 +161,6 @@
             color: var(--sb-text3);
         }
 
-        /* Contacts */
         .contacts { flex: 1; overflow-y: auto; padding: 4px 0 80px; }
         .contacts::-webkit-scrollbar { width: 0; }
 
@@ -231,7 +234,6 @@
         .c-info { flex: 1; min-width: 0; }
         .c-name  { font-size: 13.5px; font-weight: 500; color: var(--sb-text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .c-prev  { font-size: 11.5px; color: var(--sb-text3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 1px; }
-
         .c-meta  { display: flex; flex-direction: column; align-items: flex-end; gap: 5px; }
         .c-time  { font-size: 10.5px; color: var(--sb-text3); }
 
@@ -247,7 +249,6 @@
             font-family: var(--font-display);
         }
 
-        /* New-message toast in sidebar */
         .sb-toast {
             position: absolute;
             bottom: 0; left: 0; right: 0;
@@ -291,7 +292,7 @@
             white-space: nowrap;
         }
 
-        /* ── MAIN (light) ── */
+        /* ── MAIN ── */
         .main {
             flex: 1;
             display: flex;
@@ -299,9 +300,9 @@
             background: var(--main-bg);
             overflow: hidden;
             position: relative;
+            min-width: 0;
         }
 
-        /* Faint watermark behind messages */
         .main::before {
             content: 'ChatBuddy';
             font-family: var(--font-display);
@@ -318,7 +319,7 @@
             z-index: 0;
         }
 
-        /* Header */
+        /* ── CHAT HEADER ── */
         .chat-header {
             padding: 14px 22px;
             border-bottom: 1px solid var(--main-border);
@@ -328,7 +329,23 @@
             background: var(--main-bg2);
             position: relative;
             z-index: 1;
+            flex-shrink: 0;
         }
+
+        /* Hamburger menu button — hidden on desktop */
+        .menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            padding: 6px;
+            cursor: pointer;
+            color: var(--text-mid);
+            margin-left: -4px;
+            border-radius: 8px;
+            transition: background 0.15s;
+            flex-shrink: 0;
+        }
+        .menu-btn:hover { background: var(--main-bg); }
 
         .h-av {
             width: 40px; height: 40px;
@@ -351,8 +368,8 @@
             border: 2px solid var(--main-bg2);
         }
 
-        .h-info { flex: 1; }
-        .h-name  { font-size: 14.5px; font-weight: 700; font-family: var(--font-display); color: var(--text-dark); letter-spacing: -0.2px; }
+        .h-info { flex: 1; min-width: 0; }
+        .h-name  { font-size: 14.5px; font-weight: 700; font-family: var(--font-display); color: var(--text-dark); letter-spacing: -0.2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .h-status {
             font-size: 11px; color: var(--green2); margin-top: 1px;
             display: flex; align-items: center; gap: 5px;
@@ -361,9 +378,10 @@
             content: ''; width: 6px; height: 6px;
             background: var(--green);
             border-radius: 50%; display: inline-block;
+            flex-shrink: 0;
         }
 
-        /* Messages */
+        /* ── MESSAGES ── */
         .messages {
             flex: 1;
             overflow-y: auto;
@@ -373,6 +391,7 @@
             gap: 6px;
             position: relative;
             z-index: 1;
+            -webkit-overflow-scrolling: touch;
         }
 
         .messages::-webkit-scrollbar { width: 4px; }
@@ -443,7 +462,7 @@
 
         .btime { font-size: 10px; color: var(--text-light); margin-top: 4px; padding: 0 3px; }
 
-        /* Empty state */
+        /* ── EMPTY STATE ── */
         .no-chat {
             flex: 1;
             display: flex; flex-direction: column;
@@ -461,17 +480,20 @@
         }
 
         .no-chat-title { font-family: var(--font-display); font-size: 15px; font-weight: 600; color: var(--text-mid); }
-        .no-chat p { font-size: 12.5px; }
+        .no-chat p { font-size: 12.5px; text-align: center; padding: 0 20px; }
 
-        /* Input */
+        /* ── INPUT AREA ── */
         .input-area {
             padding: 14px 22px;
+            padding-bottom: max(14px, env(safe-area-inset-bottom, 14px));
             background: var(--main-bg2);
             border-top: 1px solid var(--main-border);
             display: flex;
             align-items: flex-end;
             gap: 10px;
-            position: relative; z-index: 1;
+            position: relative;
+            z-index: 1;
+            flex-shrink: 0;
         }
 
         .input-pill {
@@ -484,6 +506,7 @@
             padding: 10px 16px;
             gap: 10px;
             transition: border-color 0.2s;
+            min-width: 0;
         }
 
         .input-pill:focus-within { border-color: var(--green); }
@@ -498,6 +521,7 @@
             max-height: 120px;
             line-height: 1.5;
             font-family: var(--font-body);
+            min-width: 0;
         }
 
         .input-pill textarea::placeholder { color: var(--text-light); }
@@ -524,12 +548,11 @@
         .send-btn:hover  { transform: scale(1.06); opacity: 0.92; }
         .send-btn:active { transform: scale(0.95); }
 
-        /* ── Emoji Picker ── */
+        /* ── EMOJI PICKER ── */
         .emoji-picker {
             position: absolute;
             bottom: 76px;
-            left: 22px;
-            width: 320px;
+            left: 22px; right: 22px;
             background: var(--main-bg2);
             border: 1.5px solid var(--main-border);
             border-radius: 16px;
@@ -632,14 +655,72 @@
         }
 
         .pill-icon.emoji-btn.active { color: var(--green); }
+
+        /* ═══════════════════════════════════════
+           MOBILE RESPONSIVE — max-width: 640px
+        ═══════════════════════════════════════ */
+        @media (max-width: 640px) {
+
+            /* Show hamburger button */
+            .menu-btn { display: flex; }
+
+            /* Sidebar becomes a fixed off-canvas drawer */
+            .sidebar {
+                position: fixed;
+                top: 0; left: 0;
+                height: 100%;
+                transform: translateX(-100%);
+                box-shadow: 4px 0 24px rgba(0,0,0,0.25);
+            }
+
+            .sidebar.open { transform: translateX(0); }
+
+            /* Main panel fills full width */
+            .main { width: 100%; }
+
+            /* Tighter header padding */
+            .chat-header { padding: 12px 14px; gap: 10px; }
+
+            /* Messages fill screen with tighter padding */
+            .messages { padding: 16px 12px; }
+
+            /* Wider bubbles on small screen */
+            .bubble-wrap { max-width: 80%; }
+
+            /* Input area — tighter, respects iOS home bar */
+            .input-area {
+                padding: 10px 10px;
+                padding-bottom: max(10px, env(safe-area-inset-bottom, 10px));
+                gap: 8px;
+            }
+
+            .input-pill { padding: 8px 12px; gap: 8px; }
+
+            .input-pill textarea { font-size: 14px; }
+
+            /* Send button slightly smaller */
+            .send-btn { width: 40px; height: 40px; }
+
+            /* Emoji picker full width on mobile */
+            .emoji-picker {
+                left: 8px; right: 8px;
+                bottom: 66px;
+            }
+
+            /* No-chat hint text wraps nicely */
+            .no-chat p { padding: 0 32px; }
+        }
     </style>
 </head>
 <body>
 
 <div class="app">
 
+    <!-- Overlay (mobile only) -->
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
     <!-- ── Sidebar (dark) ── -->
-    <div class="sidebar">
+    <div class="sidebar" id="sidebar">
         <div class="sidebar-top">
             <div class="logo-row">
                 <div class="logo-box">
@@ -703,6 +784,14 @@
 
         {% if chats %}
         <div class="chat-header">
+            <!-- Hamburger: only visible on mobile -->
+            <button class="menu-btn" id="menu-btn" aria-label="Open contacts">
+                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <line x1="3" y1="6"  x2="21" y2="6"/>
+                    <line x1="3" y1="12" x2="21" y2="12"/>
+                    <line x1="3" y1="18" x2="21" y2="18"/>
+                </svg>
+            </button>
             <div class="h-av" id="header-avatar"><span class="h-online"></span></div>
             <div class="h-info">
                 <div class="h-name" id="header-name">—</div>
@@ -734,6 +823,22 @@
 
         {% else %}
         <!-- No chat selected -->
+        <div class="chat-header" id="chat-header-dyn" style="display:none">
+            <!-- Hamburger: only visible on mobile -->
+            <button class="menu-btn" id="menu-btn" aria-label="Open contacts">
+                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <line x1="3" y1="6"  x2="21" y2="6"/>
+                    <line x1="3" y1="12" x2="21" y2="12"/>
+                    <line x1="3" y1="18" x2="21" y2="18"/>
+                </svg>
+            </button>
+            <div class="h-av" id="header-avatar-dyn"><span class="h-online"></span></div>
+            <div class="h-info">
+                <div class="h-name" id="header-name-dyn">—</div>
+                <div class="h-status">Online</div>
+            </div>
+        </div>
+
         <div class="no-chat" id="no-chat-view">
             <div class="no-chat-icon">
                 <svg width="28" height="28" fill="none" stroke="var(--green)" stroke-width="1.5" viewBox="0 0 24 24" opacity="0.6">
@@ -742,14 +847,6 @@
             </div>
             <div class="no-chat-title">Pick a conversation</div>
             <p>Select someone from the left to start chatting</p>
-        </div>
-
-        <div class="chat-header" id="chat-header-dyn" style="display:none">
-            <div class="h-av" id="header-avatar-dyn"><span class="h-online"></span></div>
-            <div class="h-info">
-                <div class="h-name" id="header-name-dyn">—</div>
-                <div class="h-status">Online</div>
-            </div>
         </div>
 
         <div class="messages" id="chat-messages" style="display:none"></div>
@@ -788,6 +885,26 @@
 
 <script>
 document.addEventListener("DOMContentLoaded", function () {
+
+    // ── Mobile sidebar toggle ──
+    const menuBtns  = document.querySelectorAll("#menu-btn");
+    const sidebar   = document.getElementById("sidebar");
+    const overlay   = document.getElementById("sidebar-overlay");
+
+    function openSidebar()  { sidebar.classList.add("open");  overlay.classList.add("show"); }
+    function closeSidebar() { sidebar.classList.remove("open"); overlay.classList.remove("show"); }
+
+    menuBtns.forEach(btn => btn.addEventListener("click", openSidebar));
+    overlay.addEventListener("click", closeSidebar);
+
+    // Close sidebar when a contact is tapped on mobile
+    document.querySelectorAll(".nav-link").forEach(link => {
+        link.addEventListener("click", function () {
+            closeSidebar();
+        });
+    });
+
+    // ── Active contact & header ──
     const queryParams = new URLSearchParams(window.location.search);
     const user = queryParams.get("user");
 
@@ -798,13 +915,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
         const initials = user ? user.slice(0, 2).toUpperCase() : "?";
 
-        // Static header (chats exist)
         const headerName = document.getElementById("header-name");
         const headerAv   = document.getElementById("header-avatar");
         if (headerName) headerName.textContent = user;
         if (headerAv) headerAv.insertBefore(document.createTextNode(initials), headerAv.firstChild);
 
-        // Dynamic header (no chats yet)
         const headerNameDyn = document.getElementById("header-name-dyn");
         const headerAvDyn   = document.getElementById("header-avatar-dyn");
         const chatHeaderDyn = document.getElementById("chat-header-dyn");
@@ -826,15 +941,15 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     // ── Sidebar toast ──
-    const toast    = document.getElementById("sidebar-toast");
-    const toastAv  = document.getElementById("toast-av");
-    const toastName= document.getElementById("toast-name");
-    const toastMsg = document.getElementById("toast-msg");
-    let toastTimer = null;
-    const unread   = {};
+    const toast     = document.getElementById("sidebar-toast");
+    const toastAv   = document.getElementById("toast-av");
+    const toastName = document.getElementById("toast-name");
+    const toastMsg  = document.getElementById("toast-msg");
+    let toastTimer  = null;
+    const unread    = {};
 
     function showToast(sender, message) {
-        toastAv.textContent  = sender ? sender.slice(0, 2).toUpperCase() : "?";
+        toastAv.textContent   = sender ? sender.slice(0, 2).toUpperCase() : "?";
         toastName.textContent = sender || "Someone";
         toastMsg.textContent  = message;
         toast.classList.add("show");
@@ -876,7 +991,7 @@ document.addEventListener("DOMContentLoaded", function () {
             row.appendChild(av);
         }
 
-        const wrap  = document.createElement("div");
+        const wrap   = document.createElement("div");
         wrap.className = "bubble-wrap";
 
         const bubble = document.createElement("div");
@@ -908,27 +1023,21 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const protocol = window.location.protocol === "https:" ? "wss" : "ws";
 
-    const ws = new WebSocket(
-        `${protocol}://${window.location.host}/ws/wsc/`
-    );
+    const ws = new WebSocket(`${protocol}://${window.location.host}/ws/wsc/`);
     ws.addEventListener("open",    () => console.log("WS connected"));
     ws.addEventListener("close",   () => console.log("WS closed"));
     ws.addEventListener("message", (event) => {
         try {
-            const data = JSON.parse(event.data);
-            const sender = data.sender || "Someone";
+            const data    = JSON.parse(event.data);
+            const sender  = data.sender || "Someone";
             const message = data.msg || event.data;
-            
             console.log(`📨 Received from ${sender}: ${message}`);
-            
-            // Only show message if it's from the current chat user
             if (sender === user) {
                 appendMessage("frnd", message);
                 showToast(sender, message);
             }
         } catch (e) {
             console.error("❌ Failed to parse message:", e);
-            console.log("Raw event.data:", event.data);
         }
     });
 
@@ -955,7 +1064,7 @@ document.addEventListener("DOMContentLoaded", function () {
             const q = this.value.trim().toLowerCase();
             let visible = 0;
             contactItems.forEach(el => {
-                const name = (el.dataset.username || '').toLowerCase();
+                const name  = (el.dataset.username || '').toLowerCase();
                 const match = !q || name.includes(q);
                 el.style.display = match ? '' : 'none';
                 if (match) visible++;
@@ -966,14 +1075,14 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // ── Emoji Picker ──
     const EMOJI_CATS = [
-        { label: 'Smileys', icon: '😀', emojis: ['😀','😁','😂','🤣','😃','😄','😅','😆','😉','😊','😋','😎','😍','🥰','😘','😗','😙','😚','🙂','🤗','🤩','🤔','🤨','😐','😑','😶','🙄','😏','😣','😥','😮','🤐','😯','😪','😫','🥱','😴','😌','😛','😜','😝','🤤','😒','😓','😔','😕','🙃','🤑','😲','🙁','😖','😞','😟','😤','😢','😭','😦','😧','😨','😩','🤯','😬','😰','😱','🥵','🥶','😳','🤪','😵','🥴','😠','😡','🤬','😷','🤒','🤕','🤢','🤮','🤧','🥳','🥸','🤠','🥺','😈','👿'] },
-        { label: 'Gestures', icon: '👋', emojis: ['👋','🤚','🖐','✋','🖖','👌','🤌','🤏','✌️','🤞','🤟','🤘','🤙','👈','👉','👆','🖕','👇','☝️','👍','👎','✊','👊','🤛','🤜','👏','🙌','👐','🤲','🤝','🙏','✍️','💅','🤳','💪','🦾','🦿','🦵','🦶','👂','🦻','👃','🫀','🫁','🧠','🦷','🦴','👁','👅','👄','💋','🩸'] },
-        { label: 'People', icon: '👶', emojis: ['👶','🧒','👦','👧','🧑','👱','👨','🧔','👩','🧓','👴','👵','🙍','🙎','🙅','🙆','💁','🙋','🧏','🙇','🤦','🤷','👮','🕵️','💂','🥷','👷','🤴','👸','👳','👲','🧕','🤵','👰','🤰','��','👼','🎅','🤶','🦸','🦹','🧙','🧝','🧛','🧟','🧞','🧜','🧚','🧑‍🤝‍🧑','👫','👬','👭','💏','💑','👪'] },
-        { label: 'Animals', icon: '🐶', emojis: ['🐶','🐱','🐭','🐹','🐰','🦊','🐻','🐼','🐨','🐯','🦁','🐮','🐷','🐸','🐵','🙈','🙉','🙊','🐔','🐧','🐦','🐤','🦆','🦅','🦉','🦇','🐺','🐗','🐴','🦄','🐝','🐛','🦋','🐌','🐞','🐜','🦟','🦗','🦂','🐢','🐍','🦎','🦖','🦕','🐙','🦑','🦐','🦞','🦀','🐡','🐠','🐟','🐬','🐳','🐋','🦈','🐊','🐅','🐆','🦓','🦍','🦧','🐘','🦛','🦏','🐪','🐫','🦒','🦘','🐃','🐂','🐄','🐎','🐖','🐏','🐑','🦙','🐐','🦌','🐕','🐩','🦮','🐕‍🦺','🐈','🐈‍⬛','🐓','🦃','🦚','🦜','🦢','🦩','🕊','🐇','🦝','🦨','🦡','🦦','🦥','🐁','🐀','🐿','🦔'] },
-        { label: 'Food', icon: '🍕', emojis: ['🍕','🍔','🍟','🌭','🍿','🧂','🥓','🥚','🍳','🧇','🥞','🧈','🍞','🥐','🥖','🫓','🥨','🥯','🧀','🥗','🥙','🧆','🌮','🌯','🫔','🥫','🍱','🍘','🍙','🍚','🍛','🍜','🍝','🍠','🍢','🍣','🍤','🍥','🥮','🍡','🥟','🥠','🥡','🦀','🦞','🦐','🦑','🦪','🍦','🍧','🍨','🍩','🍪','🎂','🍰','🧁','🥧','🍫','🍬','🍭','🍮','🍯','🍼','🥛','☕','🫖','🍵','🧃','🥤','🧋','🍶','🍺','🍻','🥂','🍷','🥃','🍸','🍹','🍾','🧊'] },
-        { label: 'Travel', icon: '✈️', emojis: ['✈️','🚀','🛸','🚁','🛶','⛵','🚤','🛥️','🛳️','⛴️','🚢','🚂','🚃','🚄','🚅','🚆','🚇','🚈','🚉','🚊','🚝','🚞','🚋','🚌','🚍','🚎','🚐','🚑','🚒','🚓','🚔','🚕','🚖','🚗','🚘','🚙','🛻','🚚','🚛','🚜','🏎️','🏍️','🛵','🦽','🦼','🛺','🚲','🛴','🛹','🛼','🛷','⛸️','🚏','🛣️','🛤️','🏕️','🏖️','🏜️','🏝️','🏞️','🏟️','🏛️','🏗️','🧱','🏘️','🏚️','🏠','🏡','🏢','🏣','🏤','🏥','🏦','🏨','🏩','🏪','🏫','🏬','🏭','🏯','🏰','💒','🗼','🗽','⛪','🕌','🛕','🕍','⛩️','🕋','⛲','⛺','🌁','🌃','🏙️','🌄','🌅','🌆','🌇','🌉','🗺️','🗾','🧭','🌐','🗿'] },
-        { label: 'Objects', icon: '💡', emojis: ['💡','🔦','🕯️','🪔','💰','💳','💎','⚖️','🔧','🔨','⚒️','🛠️','⛏️','🔩','🪛','🔑','🗝️','🔐','🔏','🔒','🔓','🚪','🪑','🛋️','🛏️','🚿','🛁','🪠','🪣','🧴','🧷','🧹','🧺','🧻','🪣','🧼','🪥','🧽','🪒','💊','💉','🩺','🩻','🩹','🩼','🩺','🔭','🔬','🩻','📱','💻','⌨️','🖥️','🖨️','🖱️','🖲️','💽','💾','💿','📀','📷','📸','📹','🎥','📽️','🎬','📞','☎️','📟','📠','📺','📻','🧭','⏱️','⏲️','⏰','🕰️','⌚','📡','🔋','🔌','💡','🔦','🕯️','🪄','🎩','🪅','🎭','🖼️','🎨','🧵','🪡','🧶','🪢','🎪','🎠','🎡','🎢','💈'] },
-        { label: 'Symbols', icon: '❤️', emojis: ['❤️','🧡','💛','💚','💙','💜','🖤','🤍','🤎','💔','❤️‍🔥','❤️‍🩹','❣️','💕','💞','💓','💗','💖','💘','💝','💟','☮️','✝️','☪️','🕉️','☸️','✡️','🔯','🕎','☯️','☦️','🛐','⛎','♈','♉','♊','♋','♌','♍','♎','♏','♐','♑','♒','♓','⛔','🚫','💯','✅','❎','🔴','🟠','🟡','🟢','🔵','🟣','⚫','⚪','🟤','🔺','🔻','🔷','🔶','🔹','🔸','🔲','🔳','▪️','▫️','◾','◽','◼️','◻️','🟥','🟧','🟨','🟩','🟦','🟪','⬛','⬜','🟫','🔈','🔉','🔊','📢','📣','🔔','🔕','🎵','🎶','⁉️','‼️','❓','❔','❕','❗','💬','💭','💤'] },
+        { label: 'Smileys',  icon: '😀', emojis: ['😀','😁','😂','🤣','😃','😄','😅','😆','😉','😊','😋','😎','😍','🥰','😘','😗','😙','😚','🙂','🤗','🤩','🤔','🤨','😐','😑','😶','🙄','😏','😣','😥','😮','🤐','😯','😪','😫','🥱','😴','😌','😛','😜','😝','🤤','😒','😓','😔','😕','🙃','🤑','😲','🙁','😖','😞','😟','😤','😢','😭','😦','😧','😨','😩','🤯','😬','😰','😱','🥵','🥶','😳','🤪','😵','🥴','😠','😡','🤬','😷','🤒','🤕','🤢','🤮','🤧','🥳','🥸','🤠','🥺','😈','👿'] },
+        { label: 'Gestures', icon: '👋', emojis: ['👋','🤚','🖐','✋','🖖','👌','🤌','🤏','✌️','🤞','🤟','🤘','🤙','👈','👉','👆','🖕','👇','☝️','👍','👎','✊','👊','🤛','🤜','👏','🙌','👐','🤲','🤝','🙏','✍️','💅','🤳','💪','🦾','🦵','🦶','👂','🦻','👃','🧠','🦷','🦴','👁','👅','👄','💋','🩸'] },
+        { label: 'People',   icon: '👶', emojis: ['👶','🧒','👦','👧','🧑','👱','👨','🧔','👩','🧓','👴','👵','🙍','🙎','🙅','🙆','💁','🙋','🧏','🙇','🤦','🤷','👮','🕵️','💂','🥷','👷','🤴','👸','👳','👲','🧕','🤵','👰','🤰','👼','🎅','🤶','🦸','🦹','🧙','🧝','🧛','🧟','🧞','🧜','🧚','👫','👬','👭','💏','💑','👪'] },
+        { label: 'Animals',  icon: '🐶', emojis: ['🐶','🐱','🐭','🐹','🐰','🦊','🐻','🐼','🐨','🐯','🦁','🐮','🐷','🐸','🐵','🙈','🙉','🙊','🐔','🐧','🐦','🐤','🦆','🦅','🦉','🦇','🐺','🐗','🐴','🦄','🐝','🐛','🦋','🐌','🐞','🐜','🦟','🦗','🦂','🐢','🐍','🦎','🦖','🦕','🐙','🦑','🦐','🦞','🦀','🐡','🐠','🐟','🐬','🐳','🐋','🦈','🐊','🐅','🐆','🦓','🦍','🦧','🐘','🦛','🦏','🐪','🐫','🦒','🦘','🐃','🐂','🐄','🐎','🐖','🐏','🐑','🦙','🐐','🦌','🐕','🐩','🦮','🐕‍🦺','🐈','🐈‍⬛','🐓','🦃','🦚','🦜','🦢','🦩','🕊','🐇','🦝','🦨','🦡','🦦','🦥','🐁','🐀','🐿','🦔'] },
+        { label: 'Food',     icon: '🍕', emojis: ['🍕','🍔','🍟','🌭','🍿','🧂','🥓','🥚','🍳','🧇','🥞','🧈','🍞','🥐','🥖','🥨','🥯','🧀','🥗','🥙','🧆','🌮','🌯','🥫','🍱','🍘','🍙','🍚','🍛','🍜','🍝','🍠','🍢','🍣','🍤','🍥','🥮','🍡','🥟','🥠','🥡','🍦','🍧','🍨','🍩','🍪','🎂','🍰','🧁','🥧','🍫','🍬','🍭','🍮','🍯','🍼','🥛','☕','🍵','🧃','🥤','🧋','🍶','🍺','🍻','🥂','🍷','🥃','🍸','🍹','🍾','🧊'] },
+        { label: 'Travel',   icon: '✈️', emojis: ['✈️','🚀','🛸','🚁','🛶','⛵','🚤','🛥️','🛳️','⛴️','🚢','🚂','🚃','🚄','🚅','🚆','🚇','🚈','🚉','🚊','🚝','🚞','🚋','🚌','🚍','🚎','🚐','🚑','🚒','🚓','🚔','🚕','🚖','🚗','🚘','🚙','🛻','🚚','🚛','🚜','🏎️','🏍️','🛵','🚲','🛴','🛹','🛼','🛷','⛸️','🏕️','🏖️','🏜️','🏝️','🏞️','🏟️','🏛️','🏗️','🧱','🏘️','🏚️','🏠','🏡','🏢','🏣','🏤','🏥','🏦','🏨','🏩','🏪','🏫','🏬','🏭','🏯','🏰','💒','🗼','🗽','⛪','🕌','🛕','🕍','⛩️','🕋','⛲','⛺','🌁','🌃','🏙️','🌄','🌅','🌆','🌇','🌉','🗺️','🗾','🧭','🌐','🗿'] },
+        { label: 'Objects',  icon: '💡', emojis: ['💡','🔦','🕯️','🪔','💰','💳','💎','⚖️','🔧','🔨','⚒️','🛠️','⛏️','🔩','🪛','🔑','🗝️','🔐','🔏','🔒','🔓','🚪','🪑','🛋️','🛏️','🚿','🛁','🪠','🪣','🧴','🧷','🧹','🧺','🧻','🧼','🪥','🧽','🪒','💊','💉','🩺','🩻','🩹','🩼','🔭','🔬','📱','💻','⌨️','🖥️','🖨️','🖱️','🖲️','💽','💾','💿','📀','📷','📸','📹','🎥','📽️','🎬','📞','☎️','📟','📠','📺','📻','🧭','⏱️','⏲️','⏰','🕰️','⌚','📡','🔋','🔌','💡','🔦','🕯️','🪄','🎩','🪅','🎭','🖼️','🎨','🧵','🪡','🧶','🪢','🎪','🎠','🎡','🎢','💈'] },
+        { label: 'Symbols',  icon: '❤️', emojis: ['❤️','🧡','💛','💚','💙','💜','🖤','🤍','🤎','💔','❤️‍🔥','❤️‍🩹','❣️','💕','💞','💓','💗','💖','💘','💝','💟','☮️','✝️','☪️','🕉️','☸️','✡️','🔯','🕎','☯️','☦️','🛐','⛔','🚫','💯','✅','❎','🔴','🟠','🟡','🟢','🔵','🟣','⚫','⚪','🟤','🔺','🔻','🔷','🔶','🔹','🔸','🔲','🔳','▪️','▫️','◾','◽','◼️','◻️','🟥','🟧','🟨','🟩','🟦','🟪','⬛','⬜','🟫','🔈','🔉','🔊','📢','📣','🔔','🔕','🎵','🎶','⁉️','‼️','❓','❔','❕','❗','💬','💭','💤'] },
     ];
 
     const picker    = document.getElementById('emoji-picker');
@@ -999,7 +1108,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     function renderSearch(q) {
-        const all = EMOJI_CATS.flatMap(c => c.emojis);
+        const all  = EMOJI_CATS.flatMap(c => c.emojis);
         const hits = all.filter(e => e.includes(q));
         epLabel.textContent = hits.length ? 'Results' : 'No results';
         epGrid.innerHTML = '';
@@ -1023,7 +1132,6 @@ document.addEventListener("DOMContentLoaded", function () {
         textarea.dispatchEvent(new Event('input'));
     }
 
-    // Build tabs
     EMOJI_CATS.forEach((cat, i) => {
         const btn = document.createElement('button');
         btn.className = 'ep-tab' + (i === 0 ? ' active' : '');
@@ -1053,6 +1161,7 @@ document.addEventListener("DOMContentLoaded", function () {
             toggleBtn.classList.remove('active');
         }
     });
-});</script>
+});
+</script>
 </body>
 </html>
