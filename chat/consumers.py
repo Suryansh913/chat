@@ -2,20 +2,32 @@ import json
 from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.db import database_sync_to_async
 import datetime
+from django.contrib.auth.models import AnonymousUser
 
 class MychatApp(AsyncWebsocketConsumer):
 
+    
     async def connect(self):
-        # Use username for consistent group naming
-        self.username = self.scope['user'].username
+        print("CONNECT CALLED")
+        print("USER:", self.scope["user"])
+
+        if self.scope["user"].is_anonymous:
+            print("ANONYMOUS USER - CONNECTION REJECTED")
+            await self.close()
+            return
+
+        self.username = self.scope["user"].username
+
         self.user_group_name = f"mychat_app_{self.username}"
-        
+
         await self.channel_layer.group_add(
             self.user_group_name,
             self.channel_name
         )
+
         await self.accept()
-        print(f"✓ User {self.username} connected to group {self.user_group_name}")
+
+        print(f"CONNECTED: {self.username}")
 
     async def receive(self, text_data):
         try:
