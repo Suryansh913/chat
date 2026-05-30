@@ -34,3 +34,12 @@ def index(request):
         'chats': mychats_data,
         'frnds': frnd
     })
+
+
+from django.http import HttpResponse
+
+def onesignal_worker(request):
+    js = '''
+importScripts("https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.sw.js");
+'''
+    return HttpResponse(js, content_type="application/javascript")
